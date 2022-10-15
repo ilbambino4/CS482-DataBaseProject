@@ -189,6 +189,7 @@ def question3():
 
 #solves question 4
 def question4(PhoneNo):
+    mycursor = mydb.cursor(buffered = True)
     num = input("enter client number: ")
 
     sql = ("select * \
@@ -274,17 +275,24 @@ def question7():
 
 #solves question 8
 def question8():
-    adminCnt = mycursor.execute("SELECT count(empID) FROM proj_1.Administor;")
+    mycursor = mydb.cursor(buffered = True)
+    adminCnt = ("SELECT count(empID) FROM Administrator;")
+    mycursor.execute(adminCnt)
+    myresult1 = mycursor.fetchall()
 
-    Salesmen = mycursor.execute("SELECT count(empID) FROM proj_1.Salesman;")
+    Salesmen = ("SELECT count(empID) FROM Salesman;")
+    mycursor.execute(Salesmen)
+    myresult2 = mycursor.fetchall()
 
-    Technicians = mycursor.execute("SELECT count(empID) FROM proj_1.TechnicialSupport;")
+    Technicians = ("SELECT count(empID) FROM TechnicalSupport;")
+    mycursor.execute(Technicians)
+    myresult3 = mycursor.fetchall()
 
-    print("Role                    cnt")
+    print("Role             cnt")
     print("------------------")
-    print("Administrator:         ", adminCnt)
-    print("Salesman:         ", Salesmen)
-    print("Technicians:         ",Technicians) 
+    print("Administrator:\t", myresult1[0][0])
+    print("Salesman:     \t", myresult2[0][0])
+    print("Technicians:  \t",myresult3[0][0]) 
 
 
 
