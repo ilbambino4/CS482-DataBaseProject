@@ -1,75 +1,155 @@
 import mysql.connector
 
-############################################################
-def database_controller(usrname, pswrd):
-    db = mysql.connector.connect(host="localhost", user=usrname,
-                                 password=pswrd, database="proj_1",
-                                 auth_plugin='mysql_native_password')
-    mycursor = db.cursor() 
-    Salesmen = ("SELECT * FROM Salesman;")
-    
-    mycursor.execute(Salesmen)
-  
-    for x in mycursor:
-        print(x)
-    print()
-############################################################
-def search_dig_disp():
-    #2. Search digital displays given a scheduler system 
-    db = mysql.connector.connect(host="localhost", user="root",
-                                 password="11006nekk", database="proj_1",
-                                 auth_plugin='mysql_native_password')
-    s = input("enter schedular sytem you want to search: ")
-    sCursor = db.cursor() 
-    search = ("SHOW" , s,"FROM DigitalDisplay;")
-    
-    sCursor.execute(search)
-    cnt = 1
-    for x in sCursor:
-        print(cnt," ",x)
-        cnt = cnt + 1
+#error check variable
+error=False
+
+#Initial Title
+title = "Database Login"
+print(title.center(20),"\n")
+
+#Asks for user info to connect to the database and throws an error if connection fails
+#Loops until valid connection is created
+while(1):
+    host = input("   input database host: ")
+    name = input("   input database name: ")
+    username = input("   input username: ")
+    password = input("   input password: ")
     print()
 
+    try:
+        db = mysql.connector.connect(host=host, user=username,
+                                    password=password, database=name,
+                                    )
+        mycursor = db.cursor()
+    except:
+        print("   ERROR: Could Not Connect to Database")
+        print("   ERROR: Try again")
+        print()
+        error=True
 
-def selection(): 
-    print("Database Selection".center(20))
-    print("\n1. Display all the digital displays.")
-    x = int(input("Enter option here: "))
-   
-    if x == 1: 
-        print("sum")
-    if x == 2: 
+    if (not error):
+        break
+    else:
+        error=False
+
+print("   Database Connection Established")
+print()
+
+def main():
+    #User's choice
+    choice=0
+
+    error=False
+
+    #loops available options for the user to choose from
+    while(1):
+        print("   Available Options:")
+        print("   1. Display all the digital displays.")
+        print("   2. Search digital displays given a scheduler system")
+        print("   3. Insert a new digital display")
+        print("   4. Delete a digital display")
+        print("   5. Update a digital display")
+        print("   6. Logout")
+        print()
+        
+        #checks to see if user input is a number
+        try:
+            choice=int(input("   Enter your choice (1-6): "))
+            print()
+        except:
+            print()
+            print("   ERROR: Must enter a number for your choice (1-6)")
+            print()
+            error=True
+
+        if (not error):
+            #checks to see if choice is between 1 and 6
+            if (choice > 6 or choice < 1):
+                print("   ERROR: Must enter a valid number for your choice (1-6)")
+                print()
+            else:
+                #checks for the choice 6 to exit
+                if (choice==6):
+                    print("   Goodbye")
+                    break
+                else:
+                    #calls function that will execute the user's choice
+                    #function uses user's choice and database cursor
+                    selection(choice)
+
+        error=False
+    
+
+############################################################
+def selection(choice):
+    if (choice == 1):
+        #Displays all Digital Displays
+        display_dig_disp()
+    elif(choice == 2):
+        #Searches Digital Display Systems
         search_dig_disp()
-        #if x == 3: 
-            #insert_New_digDisp()
-        #if x == 4: 
-            #del_DigDisp()
-        #if x == 5: 
-            #update_digDisp()
-        #x = int(input("press 6 to logout:"))
-            
-#• 2. Search digital displays given a scheduler system 
-#• 3. Insert a new digital display 
-#• 4. Delete a digital display 
-#• 5. Update a digital display 
-# 6. Logout ")
+    elif(choice == 3):
+        #Insert a new Digital Display
+        print("2")
+    elif(choice == 4):
+        #Delete a Digital Display
+        print("2")
+    else:
+        #Updates a Digital Display
+        print("2")
 
-
-
-if __name__ == "__main__":
-    users = ["root"]
-    pswrd = ["11006nekk"]
-
-
-    title = "Database Login"
-    print(title.center(20),"\n")
+#1. 1. Display all the digital displays.
+############################################################
+def display_dig_disp():
+    search = "SELECT * FROM DIGITALDISPLAY"
     
-    username = input("input username: ")
-    password = input("input password: ")
+    mycursor.execute(search)
 
-    if username in users and password in pswrd:
-        selection()
-        #database_controller(username,password)
-    else: 
-        print("Try again")
+    #Fetches the rows from the search
+    rows = mycursor.fetchall()
+
+    #Prints message to user if search is empty
+    if(len(rows) == 0):
+        print("   Digital Displays is empty")
+        print()
+    else:
+        print("   All Digital Displays:")
+        #Prints returned Digital Displays if search return is not empty
+        cnt = 1
+        for x in rows:
+            print("  ",cnt," ",x)
+            cnt = cnt + 1
+        print()
+
+#2. Search digital displays given a scheduler system
+############################################################
+def search_dig_disp(): 
+    s = input("   Enter schedular system you want to search: ")
+    print()
+    search = "SELECT * FROM DIGITALDISPLAY WHERE SCHEDULERSYSTEM='"+s+"'"
     
+    mycursor.execute(search)
+
+    #Fetches the rows from the search
+    rows = mycursor.fetchall()
+
+    #Prints message to user if search is empty
+    if(len(rows) == 0):
+        print("   Nothing returned from search")
+        print()
+    else:
+        print("   Returned Digital Displays:")
+        #Prints returned Digital Displays if search return is not empty
+        cnt = 1
+        for x in rows:
+            print("  ",cnt," ",x)
+            cnt = cnt + 1
+        print()
+
+#3. Insert a new digital display 
+#4. Delete a digital display 
+#5. Update a digital display 
+#6. Logout ")
+
+main()
+db.close()
