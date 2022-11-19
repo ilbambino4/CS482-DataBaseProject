@@ -18,6 +18,41 @@ def dig_display_exist(serialNo):
         print("   Digital Display with Serial Number ", serialNo, " exist")
         print("")
         return True
+    
+#helper function to varify existence of model
+def model_eixst(modelNo):
+    sql = "select modelNo\
+           from Model\
+           where modelNo = %s;"
+           
+    val = (modelNo,)
+    
+    mycursor.execute(sql, val)
+
+    myresult = mycursor.fetchall()
+    
+    if len(myresult) == 0:
+        return False
+    else:
+        return True
+    
+# function used to create a newe model with the useres model number
+def create_model(modelNo):
+    
+    print("   Following decimal values should not be more than 6 numbres in lengt and no more than two decimal points to the right. Ex: 1234.43 = valid but 12.1234 = not valid")
+    print("")
+    heigth = float(input("   Height: "))
+    width = float(input("   Width: "))
+    weight = float(input("   Weight: "))
+    depth = float(input("   Depth: "))
+    screeenSize = float(input("   Screen Size: "))
+    
+    sql = "insert into Model\
+            values(%s,%s,%s,%s,%s,%s);"
+                   
+    val = (modelNo, heigth, width, weight, depth, screeenSize)
+    
+    mycursor.execute(sql, val)
 
 #error check variable
 error=False
@@ -109,7 +144,7 @@ def selection(choice):
         search_dig_disp()
     elif(choice == 3):
         #Insert a new Digital Display
-        print("2")
+        create_dig_display()
     elif(choice == 4):
         #Delete a Digital Display
         print("2")
@@ -168,10 +203,61 @@ def search_dig_disp():
 #3. Insert a new digital display
 ############################################################
 
+def create_dig_display():
+    validSereialNo = False
+    validModelNo = False
+    validSchedulSys = False
+    validSys = ["Random", "random", "Smart", "smart", "Virtue", "virtue"]
+    
+    while validSereialNo != True: 
+        serialNo = input("   Serial Number for new Digital Display: ")
+        if len(serialNo) < 10:
+            validSereialNo = True
+        else:
+            print("   Serial Number too long...Try Again")
+            print("")
+            
+    while validModelNo != True:
+        modelNo = input("   Model Number for new Digital Display: ")
+        if len(modelNo) < 10:
+            validModelNo = True
+            if model_eixst(modelNo) != True:
+                #create the new model
+                print("   Model with Model Number ", modelNo, " does not exist...moving user to create new model")
+                print("")
+                create_model(modelNo)
+        else:
+            print("   Model Number too long...Try again")
+            print("")
+            
+    while not validSchedulSys:
+        schedSys = input("   New Scheduler System: ")
+         
+        if schedSys in validSys:
+            validSchedulSys = True
+            print("   Valid Scheduler System")
+            print("")
+        else: 
+             print("   Not a valid Sheduler System...Try again")
+             print("")
+             
+    print("   Creating New Digital Display")
+    print("")
+    sql = "insert into DigitalDisplay\
+            values(%s,%s,%s);"
+            
+    val = (serialNo, schedSys, modelNo)
+     
+    mycursor.execute(sql, val)
+    
+    display_dig_disp()
 
+    
 
 #4. Delete a digital display 
 ############################################################
+def delete_dig_display():
+    validInput = ["Random", "random", "Smart", "smart", "Virtue", "virtue"]
 
 
 #5. Update a digital display 
