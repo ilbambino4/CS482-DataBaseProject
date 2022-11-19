@@ -1,5 +1,24 @@
 import mysql.connector
 
+#helper funciton to varify existence of a dig display 
+def dig_display_exist(serialNo):
+    sql = "select serialNo\
+           from DigitalDisplay\
+           where serialNo = %s;"
+           
+    val = (serialNo,)
+    
+    mycursor.execute(sql, val)
+
+    myresult = mycursor.fetchall()
+    
+    if len(myresult) == 0:
+        return False
+    else:
+        print("   Digital Display with Serial Number ", serialNo, " exist")
+        print("")
+        return True
+
 #error check variable
 error=False
 
@@ -96,7 +115,7 @@ def selection(choice):
         print("2")
     else:
         #Updates a Digital Display
-        print("2")
+        update_dig_display()
 
 #1. 1. Display all the digital displays.
 ############################################################
@@ -146,9 +165,73 @@ def search_dig_disp():
             cnt = cnt + 1
         print()
 
-#3. Insert a new digital display 
+#3. Insert a new digital display
+############################################################
+
+
+
 #4. Delete a digital display 
+############################################################
+
+
 #5. Update a digital display 
+############################################################
+
+# this is where you started your work
+#serialNo
+#schedulerSystem
+#modelNo
+
+def update_dig_display():
+    exist = False
+    
+    # will keep asking the user to input a serial numer
+    # if the current number they inputed is not a valid serial number
+    while exist != True:
+        serialNo = input("   Serial Number of Display to update: ")
+        if dig_display_exist(serialNo) == True:
+            exist = True
+            #break
+        else:
+            print("   Serial Number not found...Try again")
+            print("")
+    
+    # list that is holding the valid 
+    # scheduler systems the user can input
+    validInput = ["Random", "random", "Smart", "smart", "Virtue", "virtue"]
+    goodResponse = False
+    
+    # checking if the scheduler system 
+    # user inputed is one of the available scheduler systems
+    # if it is not, program will keep asking user to input 
+    # a scheduler system until it's a valid system
+    while not goodResponse:
+        newSchedSystem = input("   New Scheduler System: ")
+        
+        if newSchedSystem in validInput:
+            goodResponse = True
+            print("   Valid Scheduler System")
+        else: 
+            print("   Not a valid Sheduler System...Try again")
+            print("")
+    
+    print("   Updating Digital Display with Serial Number: ", serialNo)
+    print("")
+    
+    print("   Updated Digital Displays")
+    print("")
+    
+    #sql command used to update stuff
+    sql = "update DigitalDisplay\
+            set schedulerSystem = %s\
+            where serialNo = %s;"
+    
+    val = (newSchedSystem, serialNo)
+    
+    mycursor.execute(sql, val)
+    
+    display_dig_disp()
+
 #6. Logout ")
 
 main()
