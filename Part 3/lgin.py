@@ -15,7 +15,7 @@ def dig_display_exist(serialNo):
     if len(myresult) == 0:
         return False
     else:
-        print("   Digital Display with Serial Number ", serialNo, " exist")
+        print("   Digital Display with Serial Number", serialNo, "exists")
         print("")
         return True
     
@@ -138,7 +138,7 @@ def main():
 def selection(choice):
     if (choice == 1):
         #Displays all Digital Displays
-        display_dig_disp()
+        display_dig_disp_model()
     elif(choice == 2):
         #Searches Digital Display Systems
         search_dig_disp()
@@ -154,6 +154,7 @@ def selection(choice):
 
 #1. 1. Display all the digital displays.
 ############################################################
+#This method is for just displaying digital displays and won't ask users if they want to see model info
 def display_dig_disp():
     search = "SELECT * FROM DIGITALDISPLAY"
     
@@ -174,6 +175,119 @@ def display_dig_disp():
             print("  ",cnt," ",x)
             cnt = cnt + 1
         print()
+
+#This method will display digital displays but will also allow user to select a model to display as well.
+def display_dig_disp_model():
+    #bool to check if digital displays is empty
+    empty = False
+
+    search = "SELECT * FROM DIGITALDISPLAY"
+    
+    mycursor.execute(search)
+
+    #Fetches the rows from the search
+    rows = mycursor.fetchall()
+
+    #Prints message to user if search is empty
+    if(len(rows) == 0):
+        print("   Digital Displays is empty")
+        print()
+        empty = True
+    else:
+        print("   All Digital Displays:")
+        #Prints returned Digital Displays if search return is not empty
+        cnt = 1
+        for x in rows:
+            print("  ",cnt," ",x)
+            cnt = cnt + 1
+        print()
+    
+    if (not empty):
+
+        error=False
+        
+        while(1):
+            print("   Would you like to see more detailed information on a specific model?")
+            print("   1. Yes")
+            print("   2. No, take me back to the main menu")
+
+            try:
+                choice=int(input("   Enter your choice: "))
+                print()
+            except:
+                print()
+                print("   ERROR: Must enter a number for your choice (1 or 2)")
+                print()
+                error=True
+
+            if (not error):
+                if (choice > 0 and choice < 3):
+                    break
+                else:
+                    print()
+                    print("   ERROR: Choice must be a valid number (1 or 2)")
+                    print()
+            else:
+                error=False
+        
+
+        if (choice==1):
+            while(1):
+                print("   Which Digital Display would you like to see more info on their model number?")
+                search = "SELECT * FROM DIGITALDISPLAY"
+        
+                mycursor.execute(search)
+
+                #Fetches the rows from the search
+                rows = mycursor.fetchall()
+
+                #Prints returned Digital Displays if search return is not empty
+                cnt = 1
+                for x in rows:
+                    print("  ",cnt," ",x)
+                    cnt = cnt + 1
+                print()
+                
+                #offset for printing the amount of options available to the user
+                cnt-=1
+
+                error=False
+            
+                try:
+                    print("   Select digital display ( 1 -",cnt, "): ", end='')
+                    choice=int(input(""))
+                except:
+                    print()
+                    print("   ERROR: Must enter a number for your choice (1 - ", cnt, ")")
+                    print()
+                    error=True
+
+                if (not error):
+                    if(choice > 0 and choice < cnt):
+                        break
+                    else:
+                        print()
+                        print("   ERROR: Must enter a valid number (1 - ", cnt, ")")
+                        print()
+                else:
+                    error=False
+
+            print()
+            print("   Model Information for", rows[choice-1], ":")
+            print()
+
+            search = "SELECT * FROM MODEL WHERE modelNo='"+rows[choice-1][2]+"'"
+
+            mycursor.execute(search)
+
+            #Fetches the rows from the search
+            rows = mycursor.fetchall()
+
+            #Prints returned Digital Displays if search return is not empty
+            for x in rows:
+                print("  ",x)
+            print()
+            
 
 #2. Search digital displays given a scheduler system
 ############################################################
@@ -211,7 +325,7 @@ def create_dig_display():
     
     while validSereialNo != True: 
         serialNo = input("   Serial Number for new Digital Display: ")
-        if len(serialNo) < 10:
+        if len(serialNo) <= 10:
             validSereialNo = True
         else:
             print("   Serial Number too long...Try Again")
@@ -249,6 +363,8 @@ def create_dig_display():
     val = (serialNo, schedSys, modelNo)
      
     mycursor.execute(sql, val)
+
+    db.commit()
     
     display_dig_disp()
 
@@ -274,6 +390,8 @@ def update_dig_display():
     # will keep asking the user to input a serial numer
     # if the current number they inputed is not a valid serial number
     while exist != True:
+        display_dig_disp()
+
         serialNo = input("   Serial Number of Display to update: ")
         if dig_display_exist(serialNo) == True:
             exist = True
