@@ -113,6 +113,8 @@ def main():
 
     #loops available options for the user to choose from
     while(1):
+        print("                        Main Menu")
+        print("   ---------------------------------------------------")
         print("   Available Options:")
         print("   1. Display all the digital displays.")
         print("   2. Search digital displays given a scheduler system")
@@ -194,6 +196,8 @@ def display_dig_disp():
 
 #This method will display digital displays but will also allow user to select a model to display as well.
 def display_dig_disp_model():
+    print("                 Display Digital Displays")
+    print("   ---------------------------------------------------")
     #bool to check if digital displays is empty
     empty = False
 
@@ -289,7 +293,7 @@ def display_dig_disp_model():
                     error=False
 
             print()
-            print("   Model Information for", rows[choice-1], ":")
+            print("   Model information for model "+rows[choice-1][2]+":")
             print()
 
             search = "SELECT * FROM MODEL WHERE modelNo='"+rows[choice-1][2]+"'"
@@ -308,6 +312,8 @@ def display_dig_disp_model():
 #2. Search digital displays given a scheduler system
 ############################################################
 def search_dig_disp(): 
+    print("                 Search Digital Displays")
+    print("   ---------------------------------------------------")
     s = input("   Enter schedular system you want to search: ")
     print()
     search = "SELECT * FROM DIGITALDISPLAY WHERE SCHEDULERSYSTEM='"+s+"'"
@@ -334,6 +340,8 @@ def search_dig_disp():
 ############################################################
 
 def create_dig_display():
+    print("                 Create Digital Display")
+    print("   ---------------------------------------------------")
     validSereialNo = False
     validModelNo = False
     validSchedulSys = False
@@ -389,7 +397,8 @@ def create_dig_display():
 #4. Delete a digital display 
 ############################################################
 def delete_dig_display():
-
+    print("                  Delete Digital Display")
+    print("   ---------------------------------------------------")
     while(1):
         print("   Which Digital Display would you like to delete?")
         search = "SELECT * FROM DIGITALDISPLAY"
@@ -500,6 +509,9 @@ def delete_dig_display():
 #modelNo
 
 def update_dig_display():
+    print("                 Update Digital Display")
+    print("   ---------------------------------------------------")
+
     exist = False
     
     # will keep asking the user to input a serial numer
