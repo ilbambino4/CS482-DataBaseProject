@@ -1,5 +1,21 @@
 import mysql.connector
 
+# helper function to print models
+def model_display():
+    sql = "select *\
+           from Model;"
+    
+    mycursor.execute(sql,)
+    
+    rows = mycursor.fetchall()
+
+    #Prints returned Digital Displays if search return is not empty
+    cnt = 1
+    for x in rows:
+        print("  ",cnt," ",x)
+        cnt = cnt + 1
+    print()
+    
 #helper funciton to varify existence of a dig display 
 def dig_display_exist(serialNo):
     sql = "select serialNo\
@@ -147,7 +163,7 @@ def selection(choice):
         create_dig_display()
     elif(choice == 4):
         #Delete a Digital Display
-        print("2")
+        delete_dig_display()
     else:
         #Updates a Digital Display
         update_dig_display()
@@ -207,7 +223,7 @@ def display_dig_disp_model():
         error=False
         
         while(1):
-            print("   Would you like to see more detailed information on a specific model?")
+            print("   Would you like to see more detailed information on a specific model? (Enter 1 or 2)")
             print("   1. Yes")
             print("   2. No, take me back to the main menu")
 
@@ -263,7 +279,7 @@ def display_dig_disp_model():
                     error=True
 
                 if (not error):
-                    if(choice > 0 and choice < cnt):
+                    if(choice > 0 and choice <= cnt):
                         break
                     else:
                         print()
@@ -373,9 +389,108 @@ def create_dig_display():
 #4. Delete a digital display 
 ############################################################
 def delete_dig_display():
-    validInput = ["Random", "random", "Smart", "smart", "Virtue", "virtue"]
 
+    while(1):
+        print("   Which Digital Display would you like to delete?")
+        search = "SELECT * FROM DIGITALDISPLAY"
 
+        mycursor.execute(search)
+
+        #Fetches the rows from the search
+        rows = mycursor.fetchall()
+
+        #Prints returned Digital Displays if search return is not empty
+        cnt = 1
+        for x in rows:
+            print("  ",cnt," ",x)
+            cnt = cnt + 1
+        print()
+        
+        #offset for printing the amount of options available to the user
+        cnt-=1
+
+        error=False
+    
+        try:
+            print("   Select digital display ( 1 -",cnt, "): ", end='')
+            choice=int(input(""))
+            print()
+        except:
+            print()
+            print("   ERROR: Must enter a number for your choice (1 -", cnt, ")")
+            print()
+            error=True
+
+        if (not error):
+            if(choice > 0 and choice <= cnt):
+                print("   ...THIS IS A VALID CHOICE TO DELETE....")
+                print()
+                break
+            else:
+                print()
+                print("   ERROR: Must enter a valid number (1 - ", cnt, ")")
+                print()
+        else:
+            error=False
+    
+    print("   Models before deletion: ")
+    model_display()
+    print("   Deletion Complete...")
+    
+    # finding the serial numbers
+    # from the displays with the model number 
+    # corresponding to the user deletion choice. This is
+    # for the if statements later in this section
+    sql = "select serialNo\
+            from DigitalDisplay\
+            where modelNo = %s;"
+            
+    val = (rows[choice-1][2],)
+    userSN = (rows[choice-1][0],)
+    
+    mycursor.execute(sql, val)
+    
+    rows = mycursor.fetchall()
+    
+    # if there was only one display with 
+    # its correspnding model number then 
+    # delete the display and the model 
+    # with the same model number
+    if len(rows) == 1:
+        sql = "delete from DigitalDisplay\
+                where serialNo = %s;"
+        
+        mycursor.execute(sql, userSN)
+        
+        sql = "delete from Model\
+                where modelNo = %s;"
+        mycursor.execute(sql, val)
+        
+    # if the users deletion choice has a model number
+    # that is found in other displays, just delete
+    # the user choice of display and do not delete the 
+    # model with the same model number
+    if len(rows) > 1: 
+        sql = "delete from DigitalDisplay\
+                where serialNo = %s;"
+        
+        mycursor.execute(sql, userSN)
+        
+     
+    print()
+    print("   Displays after deletion")
+    print()
+    
+    display_dig_disp()
+    
+    print()
+    print("   Models after deletion")
+    print()
+    
+    model_display()
+    
+    db.commit()
+    
 #5. Update a digital display 
 ############################################################
 
